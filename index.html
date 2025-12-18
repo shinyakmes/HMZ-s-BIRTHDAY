@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>还没长大的黑米粥大王 - 输入数字</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+   body{margin:0;height:100vh;background:url("bg.png") no-repeat center/cover;}
+              
+   .input-box {
+    background: rgba(255,255,255,0.25);   /* 原来 0.6 → 0.25 */
+    border: 2px solid rgba(44,24,16,0.4);
+    box-shadow: inset 0 2px 4px rgba(44,24,16,0.1);
+    transition: all 0.3s ease;
+}
+        .input-box:focus {
+            outline: none;
+            border-color: #B8860B;
+            box-shadow: 
+                inset 0 2px 4px rgba(44, 24, 16, 0.1),
+                0 0 0 3px rgba(184, 134, 11, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .error-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .title-font {
+            font-family: 'Noto Serif SC', serif;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(44, 24, 16, 0.1);
+            border-top: 3px solid #2C1810;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="paper-texture">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <!-- 标题区域 -->
+            <div class="text-center mb-12 fade-in">
+                <h1 class="title-font text-4xl md:text-5xl font-semibold text-stone-800 mb-4">
+                    黑米粥的生日礼物
+                </h1>
+                <p class="text-stone-600 text-lg">
+                    请回忆四位数字，完成解密喵
+                </p>
+            </div>
+            
+            <!-- 输入区域 -->
+           <div class="bg-white/25 backdrop-blur-md rounded-2xl p-8 shadow-lg fade-in">
+                <div class="flex justify-center space-x-4 mb-8">
+                    <input 
+                        type="password" 
+                        maxlength="1" 
+                        class="input-box w-16 h-16 md:w-20 md:h-20 text-2xl md:text-3xl text-center rounded-xl font-mono"
+                        id="digit1"
+                        pattern="[0-9]"
+                        inputmode="numeric"
+                    >
+                    <input 
+                        type="password" 
+                        maxlength="1" 
+                        class="input-box w-16 h-16 md:w-20 md:h-20 text-2xl md:text-3xl text-center rounded-xl font-mono"
+                        id="digit2"
+                        pattern="[0-9]"
+                        inputmode="numeric"
+                    >
+                    <input 
+                        type="password" 
+                        maxlength="1" 
+                        class="input-box w-16 h-16 md:w-20 md:h-20 text-2xl md:text-3xl text-center rounded-xl font-mono"
+                        id="digit3"
+                        pattern="[0-9]"
+                        inputmode="numeric"
+                    >
+                    <input 
+                        type="password" 
+                        maxlength="1" 
+                        class="input-box w-16 h-16 md:w-20 md:h-20 text-2xl md:text-3xl text-center rounded-xl font-mono"
+                        id="digit4"
+                        pattern="[0-9]"
+                        inputmode="numeric"
+                    >
+                </div>
+                
+                <!-- 提示信息 -->
+                <div id="message" class="text-center mb-6 h-6">
+                    <p class="text-stone-500 text-sm opacity-0" id="hintText">
+                        看看哪个数字比较顺眼喵！
+                    </p>
+                </div>
+                
+                <!-- 提交按钮 -->
+                <button 
+                    id="submitBtn" 
+                    class="w-full bg-stone-800 text-white py-4 rounded-xl text-lg font-medium hover:bg-stone-700 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    <span id="btnText">让我康康！ovo</span>
+                    <div id="loadingSpinner" class="loading-spinner mx-auto hidden"></div>
+                </button>
+            </div>
+            
+
+  <!-- 底部装饰 -->
+<div class="text-center mt-8 fade-in">
+  <div class="w-16 h-px bg-stone-300 mx-auto mb-4"></div>
+  <div class="inline-block px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm">
+    <p class="text-xl bg-gradient-to-r from-pink-400 via-purple-400 to-pink-500 bg-clip-text text-transparent font-semibold">
+      ps：支持多结局喵
+    </p>
+  </div>
+</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开箱奖励喵</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      body{margin:0;height:100vh;background:url("bg.png") no-repeat center/cover;}
+       
+  	.letter-paper {
+            background: #FDFBF5;
+            box-shadow: 
+                0 4px 6px rgba(44, 24, 16, 0.1),
+                0 10px 20px rgba(44, 24, 16, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            position: relative;
+        }
+        
+        .letter-paper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(184, 134, 11, 0.3) 20%, 
+                rgba(184, 134, 11, 0.6) 50%, 
+                rgba(184, 134, 11, 0.3) 80%, 
+                transparent 100%);
+        }
+        
+        .letter-paper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(184, 134, 11, 0.3) 20%, 
+                rgba(184, 134, 11, 0.6) 50%, 
+                rgba(184, 134, 11, 0.3) 80%, 
+                transparent 100%);
+        }
+        
+        .seal {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #B8860B;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(184, 134, 11, 0.1) 0%, transparent 70%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .seal::before {
+            content: '印';
+            font-size: 24px;
+            color: #B8860B;
+            font-weight: bold;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .letter-content {
+            line-height: 1.8;
+            color: #2C1810;
+        }
+        
+        .letter-content p {
+            margin-bottom: 1rem;
+            text-indent: 2em;
+        }
+        
+        .letter-content p:first-child {
+            text-indent: 0;
+        }
+        
+        .back-btn {
+            background: rgba(44, 24, 16, 0.9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .back-btn:hover {
+            background: rgba(44, 24, 16, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 24, 16, 0.3);
+        }
+    </style>
+</head>
+<body class="paper-texture">
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-2xl">
+            <!-- 信件容器 -->
+            <div class="letter-paper rounded-2xl p-8 md:p-12 fade-in">
+                <!-- 信头 -->
+                <div class="flex justify-between items-center mb-8 border-b border-stone-200 pb-4">
+                    <div class="text-stone-600">
+                        <p class="text-sm">收件人：亲爱的宝宝</p>
+                        <p class="text-sm" id="currentDate"></p>
+                    </div>
+                    <div class="text-stone-600 text-right">
+                        <p class="text-sm">来自：虎鲸喵喵喵</p>
+                        <p class="text-sm">密码：<span id="letterCode"></span></p>
+                    </div>
+                </div>
+                
+                <!-- 信件标题 -->
+                <div class="text-center mb-8 fade-in">
+                    <h1 class="text-2xl md:text-3xl font-semibold text-stone-800 mb-2" id="letterTitle">
+                       虎鲸
+                    </h1>
+                    <div class="w-16 h-px bg-stone-300 mx-auto"></div>
+                </div>
+                
+                <!-- 信件内容 -->
+                <div class="letter-content mb-12 fade-in" id="letterContent">
+                    <!-- 内容将通过JavaScript动态加载 -->
+                </div>
+                
+                <!-- 署名和印章 -->
+                <div class="flex justify-end items-center space-x-4 fade-in">
+                    <div class="text-right">
+                        <p class="text-stone-700 font-medium" id="letterSignature">我是</p>
+                        <p class="text-stone-500 text-sm mt-1">哈基米</p>
+                    </div>
+                    <div class="seal"></div>
+                </div>
+            </div>
+            
+            <!-- 返回按钮 -->
+            <div class="text-center mt-8 fade-in">
+                <button class="back-btn" onclick="goBack()">
+                    ← 返回重新输入
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载时执行
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLetterContent();
+            setCurrentDate();
+            playAnimations();
+        });
+        
+        // 加载信件内容
+        function loadLetterContent() {
+            const letterData = localStorage.getItem('currentLetter');
+            const code = localStorage.getItem('letterCode');
+            
+            if (!letterData) {
+                // 如果没有信件数据，显示默认内容
+                document.getElementById('letterTitle').textContent = 'hello';
+                document.getElementById('letterContent').innerHTML = `
+                    <p>寻找开箱奖励喵</p>
+                    <br>
+                    <p>请输入四个数字喵</p>
+                    <p>有多个结局喵</p>
+                    <br>
+                    <p>试试看输入喵</p>
+                    <p>生日快乐喵！宝宝！</p>
+                `;
+                document.getElementById('letterSignature').textContent = '虎鲸的信箱';
+                document.getElementById('letterCode').textContent = '我不知道！';
+                return;
+            }
+            
+            try {
+                const letter = JSON.parse(letterData);
+                document.getElementById('letterTitle').textContent = letter.title;
+                document.getElementById('letterContent').innerHTML = letter.content;
+                document.getElementById('letterSignature').textContent = letter.signature;
+                document.getElementById('letterCode').textContent = code || '****';
+            } catch (error) {
+                console.error('Error loading letter:', error);
+                showError();
+            }
+        }
+        
+        // 设置当前日期
+        function setCurrentDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            document.getElementById('currentDate').textContent = `日期：${year}年${month}月${day}日`;
+        }
+        
+        // 播放动画效果
+        function playAnimations() {
+            // 页面加载动画
+            anime({
+                targets: '.fade-in',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 800,
+                delay: anime.stagger(200),
+                easing: 'easeOutQuart'
+            });
+            
+            // 信件纸张展开动画
+            anime({
+                targets: '.letter-paper',
+                scale: [0.9, 1],
+                opacity: [0, 1],
+                duration: 1000,
+                delay: 300,
+                easing: 'easeOutElastic(1, .8)'
+            });
+        }
+        
+        // 显示错误信息
+        function showError() {
+            document.getElementById('letterTitle').textContent = '出错了';
+            document.getElementById('letterContent').innerHTML = `
+                <p>内容加载失败,换个打开方式喵</p>
+                <br>
+                <p>请返回重试，或尝试其他的喵。</p>
+            `;
+            document.getElementById('letterSignature').textContent = '系统';
+        }
+        
+        // 返回上一页
+        function goBack() {
+            // 清除存储的数据
+            localStorage.removeItem('currentLetter');
+            localStorage.removeItem('letterCode');
+            
+            // 页面跳转动画
+            anime({
+                targets: 'body',
+                opacity: [1, 0],
+                duration: 500,
+                easing: 'easeInQuart',
+                complete: function() {
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+        
+        // 添加键盘事件监听
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+        
+        // 添加触摸手势支持（移动端）
+        let startY = 0;
+        let endY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            startY = e.touches[0].clientY;
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            endY = e.changedTouches[0].clientY;
+            const diff = startY - endY;
+            
+            // 向上滑动返回
+            if (diff > 50) {
+                goBack();
+            }
+        });
+    </script>
+</body>
+</html>
